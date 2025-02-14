@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Visite virtuelle interactive du campus de Gamal." name="description">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="noindex, nofollow" name="robots">
+    <title>Visite Virtuelle du Campus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .info-section {
+            max-width: 800px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .info-section h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .info-section p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .info-section ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-section ul li {
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-weight: bold;
+        }
+        h1{
+            text-align: center;
+            font-size: 50px;
+            color: rgb(91, 86, 86);
+            font-style: italic;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>VISION UGANC</h1>
+<div class="container" onmousemove="parallax(event)">
+    <div class="iframe-container parallax" data-speed="5">
+        <!-- <iframe allow="autoplay; xr-spatial-tracking; vr; gyroscope; accelerometer; fullscreen; xr; encrypted-media; picture-in-picture"
+                 allowfullscreen="true" frameborder="0"
+                 src="https://webobook.com/public/65d4c8fc888cf41a1b663ad2,en?ap=true&si=true&sm=false&sp=true&sfr=false&sl=false&sop=false&"></iframe>
+                 -->
+        <iframe allow="autoplay; xr-spatial-tracking; vr; gyroscope; accelerometer; fullscreen; xr; encrypted-media; picture-in-picture"
+                allowfullscreen="true" frameborder="0"
+                src="https://webobook.com/public/65e640fe287a1c571d362b62,en?ap=true&si=true&sm=false&sp=true&sfr=false&sl=true&sop=false&"></iframe>
+    </div>
+    <div class="info-section">
+        <h2>Découvrez notre application de visite virtuelle</h2>
+        <p>Notre application offre une expérience immersive pour découvrir les installations, les espaces et les points
+            d'intérêt de l'université Gamal Abdel Nasser de Conakry.</p>
+        <ul>
+            <li><strong>Explore le Campus :</strong> Parcours le campus comme si tu y étais ! Utilise les commandes de
+                navigation pour te déplacer dans les différents bâtiments, les salles de classe, les bibliothèques et
+                les espaces extérieurs.
+            </li>
+            <li><strong>Informations Pratiques :</strong> Consulte les différentes informations sur les bâtiments et
+                autres.
+            </li>
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>
