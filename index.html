@@ -1,160 +1,118 @@
-<?php include 'includes/session.php'; ?>
-<?php include 'includes/header.php'; ?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Visite virtuelle interactive du campus de Gamal." name="description">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="noindex, nofollow" name="robots">
+    <title>Visite Virtuelle du Campus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            box-sizing: border-box;
+        }
 
-<?php
-// Sécurité : Utilisation de requêtes préparées pour éviter les injections SQL
-$where = '';
-$catid = 0;
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
 
-if (isset($_GET['category']) && is_numeric($_GET['category'])) {
-    $catid = (int)$_GET['category'];
-    $where = 'WHERE category_id = ?';
-}
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
 
-// Recherche (optionnelle)
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
-?>
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
 
-<body class="hold-transition skin-blue layout-top-nav">
-<div class="wrapper">
+        .info-section {
+            max-width: 800px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
 
-    <?php include 'includes/navbar.php'; ?>
+        .info-section h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
 
-    <div class="content-wrapper">
-        <div class="container">
+        .info-section p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
 
-            <!-- Main content -->
-            <section class="content">
-                <div class="row">
-                    <div class="col-sm-8 col-sm-offset-2">
-                        <?php
-                        // Gestion des messages d'erreur
-                        if (isset($_SESSION['error'])) {
-                            echo "
-                                <div class='alert alert-danger'>
-                                    {$_SESSION['error']}
-                                </div>
-                            ";
-                            unset($_SESSION['error']);
-                        }
-                        ?>
-                        <div class="box">
-                            <!-- Commenter la section de la barre de recherche -->
-                            <!--
-                            <div class="box-header with-border">
-                                <form method="GET" class="form-inline">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control input-lg" name="search" id="searchBox" 
-                                               placeholder="Rechercher ISBN, Titre ou Auteur" 
-                                               value="<?php echo htmlspecialchars($search); ?>">
-                                        <span class="input-group-btn">
-                                            <button type="submit" class="btn btn-primary btn-flat btn-lg">
-                                                <i class="fa fa-search"></i>
-                                            </button>
-                                        </span>
-                                    </div>
-                                    <div class="input-group col-sm-5">
-                                        <span class="input-group-addon">Catégorie :</span>
-                                        <select class="form-control" name="category" id="catlist" onchange="this.form.submit();">
-                                            <option value="0" <?php echo ($catid == 0) ? 'selected' : ''; ?>>TOUTES</option>
-                                            <?php
-                                            // Afficher les catégories dynamiquement
-                                            $sql = "SELECT * FROM category";
-                                            $query = $conn->query($sql);
-                                            while ($catrow = $query->fetch_assoc()) {
-                                                $selected = ($catid == $catrow['id']) ? 'selected' : '';
-                                                echo "
-                                                    <option value='{$catrow['id']}' {$selected}>{$catrow['name']}</option>
-                                                ";
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                </form>
-                            </div>
-                            -->
-                            <div class="box-body">
-                                <table class="table table-bordered table-striped" id="booklist">
-                                    <thead>
-                                        <th>ISBN</th>
-                                        <th>Titre</th>
-                                        <th>Auteur</th>
-                                        <th>Statut</th>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        // Utilisation de requêtes préparées pour les livres
-                                        $sql = "SELECT * FROM books ";
-                                        $params = [];
-                                        $types = '';
+        .info-section ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
 
-                                        if (!empty($where)) {
-                                            $sql .= $where;
-                                            $params[] = $catid;
-                                            $types .= 'i';
-                                        }
+        .info-section ul li {
+            margin-bottom: 10px;
+        }
 
-                                        if (!empty($search)) {
-                                            $sql .= (!empty($where) ? ' AND ' : 'WHERE ') . "(isbn LIKE ? OR title LIKE ? OR author LIKE ?)";
-                                            $params[] = "%$search%";
-                                            $params[] = "%$search%";
-                                            $params[] = "%$search%";
-                                            $types .= 'sss';
-                                        }
-
-                                        $stmt = $conn->prepare($sql);
-                                        if ($params) {
-                                            $stmt->bind_param($types, ...$params);
-                                        }
-                                        $stmt->execute();
-                                        $result = $stmt->get_result();
-
-                                        // Afficher les résultats
-                                        if ($result->num_rows > 0) {
-                                            while ($row = $result->fetch_assoc()) {
-                                                $status = ($row['status'] == 0) 
-                                                    ? '<span class="label label-success">Disponible</span>' 
-                                                    : '<span class="label label-danger">Non disponible</span>';
-                                                echo "
-                                                    <tr>
-                                                        <td>{$row['isbn']}</td>
-                                                        <td>{$row['title']}</td>
-                                                        <td>{$row['author']}</td>
-                                                        <td>{$status}</td>
-                                                    </tr>
-                                                ";
-                                            }
-                                        } else {
-                                            echo "
-                                                <tr>
-                                                    <td colspan='4' class='text-center'>Aucun livre trouvé.</td>
-                                                </tr>
-                                            ";
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-        </div>
+        p {
+            font-weight: bold;
+        }
+        h1{
+            text-align: center;
+            font-size: 50px;
+            color: rgb(91, 86, 86);
+            font-style: italic;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>VISION UGANC</h1>
+<div class="container" onmousemove="parallax(event)">
+    <div class="iframe-container parallax" data-speed="5">
+        <!-- <iframe allow="autoplay; xr-spatial-tracking; vr; gyroscope; accelerometer; fullscreen; xr; encrypted-media; picture-in-picture"
+                 allowfullscreen="true" frameborder="0"
+                 src="https://webobook.com/public/65d4c8fc888cf41a1b663ad2,en?ap=true&si=true&sm=false&sp=true&sfr=false&sl=false&sop=false&"></iframe>
+                 -->
+        <iframe allow="autoplay; xr-spatial-tracking; vr; gyroscope; accelerometer; fullscreen; xr; encrypted-media; picture-in-picture"
+                allowfullscreen="true" frameborder="0"
+                src="https://webobook.com/public/65e640fe287a1c571d362b62,en?ap=true&si=true&sm=false&sp=true&sfr=false&sl=true&sop=false&"></iframe>
     </div>
-
-    <?php include 'includes/footer.php'; ?>
+    <div class="info-section">
+        <h2>Découvrez notre application de visite virtuelle</h2>
+        <p>Notre application offre une expérience immersive pour découvrir les installations, les espaces et les points
+            d'intérêt de l'université Gamal Abdel Nasser de Conakry.</p>
+        <ul>
+            <li><strong>Explore le Campus :</strong> Parcours le campus comme si tu y étais ! Utilise les commandes de
+                navigation pour te déplacer dans les différents bâtiments, les salles de classe, les bibliothèques et
+                les espaces extérieurs.
+            </li>
+            <li><strong>Informations Pratiques :</strong> Consulte les différentes informations sur les bâtiments et
+                autres.
+            </li>
+        </ul>
+    </div>
 </div>
-
-<?php include 'includes/scripts.php'; ?>
-
-<script>
-$(function(){
-    $('#catlist').on('change', function(){
-        $(this).closest('form').submit();
-    });
-});
-</script>
 
 </body>
 </html>
